@@ -1,43 +1,95 @@
-include 'emu8086.inc'
-.model small
-.stack 100h
-.data
-.code
-main proc
-    mov ah, 1        ; Input first character
-    int 21h
-    mov bl, al       ; Store in BL (first input)
+ORG 100H
+.DATA
+X DB ? 
+Z DB ? 
+MX DB 'INPUT VALUE $'
+MZ DB 'OUTPUT = $'
+
+.CODE
+MAIN PROC
+    MOV AX,@DATA
+    MOV DS,AX 
     
-    mov ah, 1        ; Input second character
-    int 21h
-    mov bh, al       ; Store in BH (second input)
+    MOV AH,9      ;DISPLAY MX
+    LEA DX,MX
+    INT 21H 
     
-    mov ah, 1        ; Input third character
-    int 21h
-    mov cl, al       ; Store in CL (third input)
-
-    ; Compare BL (first input) with BH (second input)
-    cmp bl, bh
-    jge check_cl1    ; If BL >= BH, go to check with CL
-    mov al, bh       ; Otherwise, AL = BH
-    jmp check_cl2
-
-check_cl1:
-    mov al, bl       ; AL = BL
-
-check_cl2:
-    cmp al, cl
-    jge output       ; If AL >= CL, AL holds the largest
-    mov al, cl       ; Otherwise, AL = CL
-
-output:
-    mov ah, 2        ; Output the largest character
-    mov dl, al
-    int 21h
-
-    ; Exit program
-    mov ah, 4Ch
-    int 21h
-
-main endp
-end main
+    MOV AH,1    ;INPUT X
+    INT 21H
+    MOV BL,AL
+    
+    INT 21H
+    MOV BH,AL
+    
+    INT 21H
+    MOV CL,AL
+                
+    CMP BL,BH
+    JGE BIG_A 
+    
+    CMP BH,CL
+    JGE OUTPUT_B
+     
+    MOV AH,2         ;NEW LINE 
+    MOV DL,0AH
+    INT 21H
+    MOV DL,0DH
+    INT 21H
+            
+    
+    MOV AH,9      ;DISPLAY MZ
+    LEA DX,MZ
+    INT 21H 
+    
+    MOV AH,2         ;OUTPUT
+    MOV DL,CL
+    INT 21H
+    JMP EXIT
+    
+    
+    BIG_A: 
+    
+     CMP BL,CL
+     JGE OUTPUT_A 
+     
+    
+   OUTPUT_A:
+    MOV AH,2         ;NEW LINE 
+    MOV DL,0AH
+    INT 21H
+    MOV DL,0DH
+    INT 21H
+            
+    
+    MOV AH,9      ;DISPLAY MZ
+    LEA DX,MZ
+    INT 21H 
+    
+    MOV AH,2         ;OUTPUT
+    MOV DL,BL
+    INT 21H
+    JMP EXIT   
+             
+   OUTPUT_B:
+    MOV AH,2         ;NEW LINE 
+    MOV DL,0AH
+    INT 21H
+    MOV DL,0DH
+    INT 21H
+            
+    
+    MOV AH,9      ;DISPLAY MZ
+    LEA DX,MZ
+    INT 21H 
+    
+    MOV AH,2         ;OUTPUT
+    MOV DL,BH
+    INT 21H
+    JMP EXIT 
+        
+    EXIT:
+    MOV AH,4CH
+    INT 21H
+    MAIN ENDP
+END MAIN
+ 
