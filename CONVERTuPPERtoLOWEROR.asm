@@ -43,7 +43,8 @@ MAIN PROC
     
     MOV AH,2         ;OUTPUT
     MOV DL,Z
-    INT 21H   
+    INT 21H
+    JMP EXIT   
              
     UPPER: 
     
@@ -63,8 +64,12 @@ MAIN PROC
     
     MOV AH,2         ;OUTPUT
     MOV DL,Z
-    INT 21H    
-    
+    INT 21H
+    JMP EXIT 
+        
+    EXIT:
+    MOV AH,4CH
+    INT 21H
     MAIN ENDP
 END MAIN
  
