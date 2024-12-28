@@ -1,153 +1,72 @@
-.MODEL SMALL
+.MODEL SMALL            
 .STACK 100h
 .DATA
-    Screen DB "Enter any Key: $"
-    Error DB "Invalid Character : $"
-    AgainMsg DB "Do You Want To Do It Again? (Y/N): $"
-    Newline DB 0Ah, 0Dh, "$"
-    Anycharter DB 0
-    ChoiceYN DB 0
-    A DB "10$"
-    B DB "11$"
-    C DB "12$"
-    D DB "13$"
-    E DB "14$"
-    F DB "15$"
-    Decimal DB "In Decimal value  $"
+
+MSG1 DB 0Dh,0Ah, "ENTER A HEXADECIMAL VALUE: ","$"
+MSG2 DB 0Dh,0Ah, "IN DECIMAL IT IS: ","$" 
+MSG3 DB 0DH,0AH, "ILLEGAL CHARACTER 0..9 OR A..F ","$"
+MSG4 DB 0DH,0AH, " DO YOU WANT TO DO IT AGAIN?" ,"$"
+
 .CODE
-MAIN:
-    MOV AX, @DATA
-    MOV DS, AX
-
-.LOOP:
-    MOV AH, 09h
-    LEA DX, Screen
-    INT 21h 
-
-    MOV AH, 01h
-    INT 21h
-    MOV [Anycharter], AL 
+MAIN PROC
+    MOV AX,@DATA
+    MOV DS,AX
     
-    MOV AH,2
-    MOV DL,10
-    INT 21H
-    MOV DL,13
-    INT 21H
+    LEVEL:
 
-    MOV AL, [Anycharter]
-    CMP AL, '0'
-    JL inavalid
-    CMP AL, '9'
-    JG Check_Leters
-
-valid_digit:
-    SUB AL, '0'
-    MOV BL, AL
-    JMP displayDvalue
-
-Check_Leters:
-    CMP AL, 'A'
-    JL inavalid
-    CMP AL, 'F'
-    JG inavalid
-    SUB AL, 'A' - 10
-    MOV BL, AL
-
-    CMP AL, 10
-    JE display_A
-    CMP AL, 11
-    JE display_B
-    CMP AL, 12
-    JE display_C
-    CMP AL, 13
-    JE display_D
-    CMP AL, 14
-    JE display_E
-    CMP AL, 15
-    JE display_F
-
-    JMP displayDValue
-
-inavalid:
-    MOV AH, 09h
-    LEA DX, Error
-    INT 21h
-    MOV AH, 09h
-    LEA DX, Newline
-    INT 21h
-    JMP .LOOP
-
-displayDValue:
-    MOV AH, 09h
-    LEA DX, Decimal
-    INT 21h
-
-    ADD BL, '0'
-    MOV DL, BL
-    MOV AH, 02h
-    INT 21h
-
-    MOV AH, 09h
-    LEA DX, Newline
-    INT 21h
-    JMP Print
-
-display_A:
-    MOV AH, 09h
-    LEA DX, A
-    INT 21h
-    JMP Printe_newline
-
-display_B:
-    MOV AH, 09h
-    LEA DX, B
-    INT 21h
-    JMP Printe_newline
-
-display_C:
-    MOV AH, 09h
-    LEA DX, C
-    INT 21h
-    JMP Printe_newline
-
-display_D:
-    MOV AH, 09h
-    LEA DX, D
-    INT 21h
-    JMP Printe_newline
-
-display_E:
-    MOV AH, 09h
-    LEA DX, E
-    INT 21h
-    JMP Printe_newline
-
-display_F:
-    MOV AH, 09h
-    LEA DX, F
-    INT 21h
-
-Printe_newline:
-    MOV AH, 09h
-    LEA DX, Newline
-    INT 21h
-
-Print:
-    MOV AH, 09h
-    LEA DX, AgainMsg
-    INT 21h
-
-    MOV AH, 01h
-    INT 21h
-    MOV [ ChoiceYN], AL
-
-    MOV AL, [ChoiceYN]
-    CMP AL, 'y'
-    JE .LOOP
-    CMP AL, 'Y'
-    JE .LOOP
-
-    MOV AH, 4Ch
-    INT 21h
-
+        MOV AH,9
+        LEA DX, MSG1
+        INT 21h
+       
+        MOV AH,1
+        INT 21h
+        MOV BL,AL
+         
+        CMP BL,'A'
+        JGE UPPER_THAN_10
+        
+        MOV AH,9
+        LEA DX, MSG2
+        INT 21h
+        MOV AH,2
+        MOV DL,BL
+        INT 21h
+        
+        JMP ASK
+   
+        UPPER_THAN_10:
+            
+            CMP BL,'F'
+            JG ILLEGAL
+            
+            MOV AH,9
+            LEA DX, MSG2
+            INT 21h
+            
+            SUB BL,17
+            MOV AH,2
+            MOV DL,'1'
+            INT 21h
+            MOV DL,BL
+            INT 21h
+               
+        ASK:
+            MOV AH,9
+            LEA DX,MSG4
+            INT 21h
+            MOV AH,1
+            INT 21h
+            CMP AL,'Y'
+            JE LEVEL
+            CMP AL, 'y'
+            JE LEVEL
+            JMP EXIT
+        
+        ILLEGAL:
+            MOV AH,9
+            LEA DX,MSG3
+            INT 21h
+            JMP LEVEL
+        EXIT:            
+ENDP
 END MAIN
