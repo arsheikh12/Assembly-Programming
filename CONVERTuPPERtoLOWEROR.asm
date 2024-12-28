@@ -1,75 +1,40 @@
-ORG 100H
+.STACK 100h
 .DATA
-X DB ? 
-Z DB ? 
-MX DB 'INPUT VALUE $'
-MZ DB 'OUTPUT = $'
+
 
 .CODE
 MAIN PROC
-    MOV AX,@DATA
-    MOV DS,AX 
+
+    ;input
+   
+    MOV AH,1
+    INT 21h
+    MOV BL,AL
     
-    MOV AH,9      ;DISPLAY MX
-    LEA DX,MX
-    INT 21H 
-    
-    MOV AH,1    ;INPUT X
+    ;new line
+    MOV AH,2
+    MOV DL, 0Dh
+    INT 21h
+    MOV DL,0Ah
     INT 21H
-    MOV X,AL
-                
-    CMP X,97
-    JGE LOWER 
     
-    CMP X,90
-    JLE UPPER
+    CMP BL,'a'
+    JGE PRINT_CAPITAL
     
-    LOWER: 
-    
-    MOV AL,X 
-    SUB AL,32D
-    MOV Z,AL
-    
-    MOV AH,2         ;NEW LINE 
-    MOV DL,0AH
-    INT 21H
-    MOV DL,0DH
-    INT 21H
-            
-    
-    MOV AH,9      ;DISPLAY MZ
-    LEA DX,MZ
-    INT 21H 
-    
-    MOV AH,2         ;OUTPUT
-    MOV DL,Z
-    INT 21H
-    JMP EXIT   
-             
-    UPPER: 
-    
-    MOV AL,X 
-    ADD AL,32D
-    MOV Z,AL
-     
-    MOV AH,2         ;NEW LINE 
-    MOV DL,0AH
-    INT 21H
-    MOV DL,0DH
-    INT 21H
-            
-    MOV AH,9      ;DISPLAY MZ
-    LEA DX,MZ
-    INT 21H 
-    
-    MOV AH,2         ;OUTPUT
-    MOV DL,Z
-    INT 21H
-    JMP EXIT 
+    PRINT_SMALL:
+        ADD BL,32
+        MOV AH,2
+        MOV DL, BL
+        INT 21h
+        JMP EXIT
+    PRINT_CAPITAL:
         
+        SUB BL,32
+        MOV AH,2
+        MOV DL, BL
+        INT 21h
+        JMP EXIT
     EXIT:
-    MOV AH,4CH
-    INT 21H
-    MAIN ENDP
+ENDP
 END MAIN
- 
+RET
