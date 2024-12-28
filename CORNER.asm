@@ -25,18 +25,9 @@ MAIN PROC
  
     MOV AL,INPUT
     CMP AL,'a' 
-    JB UPPERCASE_INPUT
-    CMP AL,'z'
-    JA INVALID_INPUT
+    JB PROCESS_INPUT_UPPER
     JMP PROCESS_INPUT_LOWER
-    
-    UPPERCASE_INPUT:
-       CMP AL,'A' 
-       JB  INVALID_INPUT 
-       CMP AL,'Z'
-       JA INVALID_INPUT
-       JMP PROCESS_INPUT_UPPER
-       
+        
     PROCESS_INPUT_LOWER:
         MOV BL,INPUT
         MOV CX,5
@@ -110,12 +101,7 @@ MAIN PROC
            LEA DX,NEWLINE
            INT 21H
            JMP EXIT
-           
-        
-INVALID_INPUT:
-
-    MOV AH, 4Ch
-    INT 21h
+                 
 
 EXIT:
     MOV AH, 4Ch
