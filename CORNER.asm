@@ -17,11 +17,9 @@ MAIN PROC
     INT 21H
     MOV INPUT,AL 
     
-    MOV AH,2
-    MOV DL,0Ah
-    INT 21h
-    MOV DL,0Dh
-    INT 21h
+    MOV AH,09H
+    LEA DX,NEWLINE
+    INT 21H
  
     MOV AL,INPUT
     CMP AL,'a' 
