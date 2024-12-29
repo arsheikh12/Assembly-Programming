@@ -1,62 +1,81 @@
-ORG 100H
-.DATA        
-STRINGS DB 'WE aRE DUET STuDeNTs', 0Dh, 0Ah, '$'  
-NoSmaller DB 'No Small letters', '$'
+INCLUDE 'EMU8086.INC'
+.MODEL SMALL
+ .STACK 100H
+
+.DATA
+        
+MASSAGE DB 'WE aRE DUET STuDeNTs', 0Dh, 0Ah, '$'  ;WE ARE DUET STUDENTS
+NOSMALL DB 'No small letters','$'
 
 .CODE
 MAIN PROC
-    MOV AX, @DATA
-    MOV DS, AX
-    MOV AH, 9
-    LEA DX, STRINGS
+    MOV AX,@DATA
+    MOV DS,AX
+    
+    MOV AH,9
+    LEA DX,MASSAGE
     INT 21h
-    XOR BX, BX
-    MOV CX, 20
-    MOV SI, 0
     
-    FIRST_LOWER: 
-        CMP STRINGS[SI], ' '
-        JE SKIP1
-        CMP STRINGS[SI], 'a'
-        JGE DISPLAY_FIRST
-        SKIP1:
-            INC SI
-            LOOP FIRST_LOWER
+    MOV AH,2
+    MOV DL,0Dh
+    INT 21h
+    MOV DL, 0Ah
+    INT 21h        
+    XOR SI,SI
+    MOV CX,20
     
-    DISPLAY_FIRST:
-        MOV DL, STRINGS[SI]
-        MOV AH, 2
+    FIRST_SMALL: 
+        CMP MASSAGE[SI],' '
+        JE NEXT
+        CMP MASSAGE[SI],'a'
+        JGE PRINTFIRST_SMALL
+        
+        NEXT:
+        INC SI
+        LOOP FIRST_SMALL
+    
+    
+    PRINTFIRST_SMALL:
+        MOV DL,MASSAGE[SI]
+        MOV AH,2
         INT 21h
-        MOV AH, 2
         MOV DL,0Dh
         INT 21h
         MOV DL,0Ah
         INT 21h
-        MOV SI, 20
-        MOV CX, 20
-        
-    LAST_LOWER:
-        CMP STRINGS[SI], ' '
-        JE SKIP2
-        CMP STRINGS[SI], 'a'
-        JGE DISPLAY_LAST
-        SKIP2:
-            DEC SI
-            LOOP LAST_LOWER
-            CMP CX,0
-            JE NO_LOWERCASE
-    DISPLAY_LAST:
-        MOV DL, STRINGS[SI]
-        MOV AH, 2
-        INT 21h
-        JMP END_PROGRAM
     
-    NO_LOWERCASE:
-        MOV AH, 2
-        LEA DX, NoSmaller
-        INT 21h   
-    END_PROGRAM:
-        MOV AH, 4Ch
+
+    
+    
+        MOV SI,20
+        MOV CX,20
+        
+        LAST_SMALL:
+            CMP MASSAGE[SI],' '
+            JE NEXT1
+            CMP MASSAGE[SI],'a'
+            JGE PRINTLAST_SMALL
+            
+            NEXT1:
+            DEC SI
+            LOOP LAST_SMALL
+    CMP CX,0
+    JE PRINT_NO_SMALL_LETTERS
+            
+        PRINTLAST_SMALL:
+            MOV DL,MASSAGE[SI]
+            MOV AH,2
+            INT 21h
+            JMP EXIT
+    
+    
+    PRINT_NO_SMALL_LETTERS:
+        MOV AH,9
+        LEA DX,NOSMALL
         INT 21h
-MAIN ENDP
-END MAIN
+        
+    EXIT:
+        
+
+ENDP
+END MAIN    
